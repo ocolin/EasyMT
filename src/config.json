@@ -1,0 +1,20 @@
+{
+  "host": "127.0.0.1",
+  "user": "admin",
+  "pass": "",
+  "port": 8729,
+  "ssl": true,
+  "ssl_options": {
+    "allow_self_signed": true,
+    "verify_peer_name": false,
+    "verify_peer": false
+  },
+  "legacy": false,
+  "timeout": 10,
+  "socket_timeout": 30,
+  "socket_blocking": true,
+  "attempts": 10,
+  "delay": 1,
+  "ssh_port": 22,
+  "ssh_timeout": 30
+}
