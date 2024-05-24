@@ -26,17 +26,26 @@ class SNMP
      * @throws Exception
      */
     public function __construct(
-        ?string $ip     = null,
-         string $prefix = '',
-           bool $local  = true
+        ?string $ip         = null,
+         string $prefix     = '',
+        ?string $community  = null,
+           ?int $version    = null,
+           bool $local      = true
     )
     {
         if( $local === true ) {
             EasyEnv::loadEnv( path: __DIR__ . '/../.env', append: true );
         }
 
-        $ip = $ip ?? $prefix . $_ENV['_MT_IP'] ?? '127.0.0.1';
-        $this->client = new EasySNMP( ip: $ip );
+        $ip        = $ip        ?? $_ENV[$prefix . '_MT_IP']          ?? '127.0.0.1';
+        $community = $community ?? $_ENV[$prefix . '_SNMP_COMMUNITY'] ?? 'public';
+        $version   = $version   ?? $_ENV[$prefix . '_SNMP_VERSION']   ?? 2;
+
+        $this->client = new EasySNMP(
+                   ip: $ip,
+            community: $community,
+              version: $version
+        );
     }
 
 
@@ -49,7 +58,7 @@ class SNMP
      * @return string|null  Name of port alias
      * @throws Exception
      */
-    public function get_Port_Alias( int $index ) : string|null
+    public function port_Alias( int $index ) : string|null
     {
         $data = $this->client->get( oid: '.1.3.6.1.2.1.31.1.1.1.18.' . $index );
 
@@ -62,10 +71,14 @@ class SNMP
 ----------------------------------------------------------------------------- */
 
     /**
+     * A list of interface entries. The number of entries
+     * is given by the value of ifNumber. This table
+     * contains additional objects for the interface table.
+     *
      * @return array<object> List of port information objects
      * @throws Exception
      */
-    public function get_Ports() : array
+    public function ports() : array
     {
         $oid    = '.1.3.6.1.2.1.31.1.1.1';
 
@@ -78,10 +91,13 @@ class SNMP
 ----------------------------------------------------------------------------- */
 
     /**
+     * A list of interface entries. The number of entries is
+     * given by the value of ifNumber
+     *
      * @return array<object> List of ethernet data objects
      * @throws Exception
      */
-    public function get_Ethernet() : array
+    public function ethernet() : array
     {
         $oid    = '.1.3.6.1.2.1.2.2.1';
 
@@ -98,7 +114,7 @@ class SNMP
      * @return string|null Name of the port
      * @throws Exception
      */
-    public function get_Port_Name( int $index ) : string|null
+    public function port_Name( int $index ) : string|null
     {
         $oid = '.1.3.6.1.2.1.2.2.1.2.' . $index;
         $data = $this->client->get( oid: $oid );
@@ -111,10 +127,14 @@ class SNMP
 ----------------------------------------------------------------------------- */
 
     /**
+     * The system group includes information about the system on which the
+     * entity resides. Object in this group are useful for fault management
+     * and configuration management.
+     *
      * @return stdClass Object of system related data
      * @throws Exception
      */
-    public function get_System() : object
+    public function system() : object
     {
         $output = new stdClass();
         $oid    = '.1.3.6.1.2.1.1';
@@ -138,10 +158,12 @@ class SNMP
 ----------------------------------------------------------------------------- */
 
     /**
+     * Table of addressing information relevant to this entity's IP addresses.
+     *
      * @return array<string, object> List of IP data
      * @throws Exception
      */
-    public function get_IPs() : array
+    public function iPs() : array
     {
         $output = [];
         $oid    = '.1.3.6.1.2.1.4.20.1';
@@ -173,10 +195,12 @@ class SNMP
 ----------------------------------------------------------------------------- */
 
     /**
+     * This entity's IP Routing table.
+     *
      * @return array<string, object> List of route data objects
      * @throws Exception
      */
-    public function get_Routes() : array
+    public function routes() : array
     {
         $output = [];
         $oid  = '.1.3.6.1.2.1.4.21.1';
@@ -215,10 +239,13 @@ class SNMP
 ----------------------------------------------------------------------------- */
 
     /**
+     * The IP Address Translation table used for mapping
+     * from IP addresses to physical addresses.
+     *
      * @return array<string, object> List of media data objects
      * @throws Exception
      */
-    public function get_Media() : array
+    public function media() : array
     {
         $output = [];
         $oid    = '.1.3.6.1.2.1.4.22.1';
@@ -263,10 +290,13 @@ class SNMP
 ----------------------------------------------------------------------------- */
 
     /**
+     * This entity's IP Routing table. This table has been deprecated in
+     * favor of the IP version neutral inetCidrRouteTable.
+     *
      * @return array<string, object> List of forward data objects
      * @throws Exception
      */
-    public function get_Forward() : array
+    public function forward() : array
     {
         $output = [];
         $oid    = '.1.3.6.1.2.1.4.24.4.1';
@@ -297,10 +327,12 @@ class SNMP
 ----------------------------------------------------------------------------- */
 
     /**
+     * Each entry contains one IpAddress to `physical' address equivalence
+     *
      * @return stdClass[] List of Arp data objects
      * @throws Exception
      */
-    public function get_ARP() : array
+    public function ARP() : array
     {
         $output = [];
         $oid = '.1.3.6.1.2.1.4.22.1.2';
@@ -331,10 +363,14 @@ class SNMP
 ----------------------------------------------------------------------------- */
 
     /**
+     * The Host Resourcers MIB defines a uniform set of objects useful for
+     * the management of host computers. Host computers are independent of
+     * the operating system, network services, or any software application.
+     *
      * @return stdClass Object of uptime data
      * @throws Exception
      */
-    public function get_Uptime() : object
+    public function uptime() : object
     {
         $output = new stdClass();
         $oid = '.1.3.6.1.2.1.25.1';
@@ -359,10 +395,12 @@ class SNMP
 ----------------------------------------------------------------------------- */
 
     /**
+     * The (conceptual) table of logical storage areas on the host.
+     *
      * @return array<int, object> List of storage data objects
      * @throws Exception
      */
-    public function get_Storage() : array
+    public function storage() : array
     {
         $oid = '.1.3.6.1.2.1.25.2.3.1';
 
@@ -378,7 +416,7 @@ class SNMP
      * @return array<int, object> List of processor data objects
      * @throws Exception
      */
-    public function get_Processor() : array
+    public function processor() : array
     {
         $statuses = [
             0 => 'unknown',
@@ -424,10 +462,12 @@ class SNMP
 ----------------------------------------------------------------------------- */
 
     /**
+     * Information about a particular physical entity.
+     *
      * @return array<int, object> Object of organization data
      * @throws Exception
      */
-    public function get_Org() : array
+    public function organization() : array
     {
         $oid = '.1.3.6.1.2.1.47.1.1.1.1';
 
@@ -436,15 +476,58 @@ class SNMP
 
 
 
+/* MAC ADDRESSES BEING FORWARDED BY BRIDGE
+----------------------------------------------------------------------------- */
+
+    /**
+     * Information about a specific unicast MAC address
+     * for which the bridge has some forwarding and/or
+     * filtering information.
+     *
+     * @return array
+     * @throws Exception
+     */
+    public function dot1dTpFdbEntry() : array
+    {
+        $output = [];
+        $oid = '.1.3.6.1.2.1.17.4.3.1';
+        $statuses = [
+            0 => 'unknown',
+            1 => 'other',
+            2 => 'invalid',
+            3 => 'learned',
+            4 => 'self',
+            5 => 'mgmt'
+        ];
+
+        $rows   = $this->client->walk( oid: $oid, numeric: true );
+        foreach( $rows as $row ) {
+            $parts = explode( separator: '.', string: $row->oid, limit: 13 );
+            list( $column, $id ) = array_slice( array: $parts, offset: -2, length: 2 );
+            $param = Params::dot1dTpFdbParams()[$column];
+            if( empty( $output[$id] )) { $output[$id] = new stdClass(); }
+            $mac = self::dec_To_Hex( $id );
+
+            if( $column == 1 ) { $row->value = self::dec_To_Hex( $id ); }
+
+
+            $output[$id]->$param = $row->value;
+            if( $column == 3 ) { $output[$id]->StatusName = $statuses[$row->value]; }
+        }
+
+        return $output;
+    }
+
+
+
 /* GET POWER INFORMATION
 ----------------------------------------------------------------------------- */
 
     /**
-     * Only works for some MTs
      * @return object Object of power data objects
      * @throws Exception
      */
-    public function get_Power() : object
+    public function power() : object
     {
         $output = new stdClass();
         $oid    = self::MIKROTIK_MIB . '3';
@@ -473,7 +556,7 @@ class SNMP
      * @return object Object of health data/values
      * @throws Exception
      */
-    public function get_Health() : object
+    public function health() : object
     {
         $output = new stdClass();
         $oid    = self::MIKROTIK_MIB . '3.100.1';
@@ -513,7 +596,7 @@ class SNMP
      * @return stdClass Licensing data object
      * @throws Exception
      */
-    public function get_Lisc() : object
+    public function license() : object
     {
         $output = new stdClass();
         $oid = self::MIKROTIK_MIB . '4';
@@ -542,7 +625,7 @@ class SNMP
      * @return stdClass Object of OS related data
      * @throws Exception
      */
-    public function get_OS() : object
+    public function os() : object
     {
         $output = new stdClass();
         $oid    = self::MIKROTIK_MIB . '7';
@@ -577,7 +660,7 @@ class SNMP
      * @return array<int, object> List of Neighbors
      * @throws Exception
      */
-    public function get_Neighbors() : array
+    public function neighbors() : array
     {
         $oid = self::MIKROTIK_MIB . '11';
 
@@ -593,7 +676,7 @@ class SNMP
      * @return array<int, object> List of interface stat data objects
      * @throws Exception
      */
-    public function get_IfStats() : array
+    public function ifStats() : array
     {
         $oid = self::MIKROTIK_MIB . '14';
 
@@ -608,12 +691,69 @@ class SNMP
      * @return object[] List of Partition data objects
      * @throws Exception
      */
-    public function get_Partitions() : array
+    public function partitions() : array
     {
         $oid = self::MIKROTIK_MIB . '17';
 
         return $this->generic_Walk( oid: $oid, param_func: 'partitionParams' );
     }
+
+
+
+/* GET OPTICAL DATA
+----------------------------------------------------------------------------- */
+
+    /**
+     * @return array<int, object> List of Optical data object
+     * @throws Exception
+     */
+    public function optical() : array
+    {
+        $output = [];
+        $oid = self::MIKROTIK_MIB . '19';
+
+        $rows   = $this->client->walk( oid: $oid, numeric: true );
+        foreach( $rows as $row )
+        {
+            if( str_contains( haystack: $row->origin, needle: 'No more variables' )) {
+                continue;
+            }
+
+            $parts = explode( separator: '.', string: $row->oid );
+            list( $column, $id ) = array_slice(
+                array: $parts,
+                offset: -2,
+                length: 2
+            );
+            $id = (int)$id;
+            $param = Params::opticalParam()[$column] ?? 'Unknown';
+
+            if( empty( $output[$id])) {
+                $output[$id] = new stdClass();
+            }
+
+            $output[$id]->$param = $row->value;
+        }
+
+        return $output;
+    }
+
+
+
+/* GET DHCP LEASE COUNT
+----------------------------------------------------------------------------- */
+
+    /**
+     * @return int Number of DHCP leases
+     * @throws Exception
+     */
+    public function leaseCount() : int
+    {
+        $data = $this->client->get( oid: self::MIKROTIK_MIB . '6.1.0' );
+
+        return (int)$data->value;
+    }
+
 
 
 /* GENERIC TREE WALK
@@ -650,59 +790,6 @@ class SNMP
         return $output;
     }
 
-/* GET OPTICAL DATA
------------------------------------------------------------------------------ */
-
-    /**
-     * @return array<int, object> List of Optical data object
-     * @throws Exception
-     */
-    public function get_Optical() : array
-    {
-        $output = [];
-        $oid = self::MIKROTIK_MIB . '19';
-
-        $rows   = $this->client->walk( oid: $oid, numeric: true );
-        foreach( $rows as $row )
-        {
-            if( str_contains( haystack: $row->origin, needle: 'No more variables' )) {
-                continue;
-            }
-
-            $parts = explode( separator: '.', string: $row->oid );
-            list( $column, $id ) = array_slice(
-                array: $parts,
-                offset: -2,
-                length: 2
-            );
-            $id = (int)$id;
-            $param = Params::opticalParam()[$column] ?? 'Unknown';
-
-            if( empty( $output[$id])) {
-                $output[$id] = new stdClass();
-            }
-
-            $output[$id]->$param = $row->value;
-        }
-
-        return $output;
-    }
-
-
-/* GET DHCP LEASE COUNT
------------------------------------------------------------------------------ */
-
-    /**
-     * @return int Number of DHCP leases
-     * @throws Exception
-     */
-    public function leaseCount() : int
-    {
-        $data = $this->client->get( oid: self::MIKROTIK_MIB . '6.1.0' );
-
-        return (int)$data->value;
-    }
-
 
 
 /* FORMAT A MAC ADDRESS - MIKROTIKS LEAVE OUT LEADING ZEROS
@@ -724,5 +811,22 @@ class SNMP
         }
 
         return implode( separator: ':', array: $parts );
+    }
+
+
+
+/* CONVERT DECIMAL MAC TO HEXIDECIMAL MAC
+----------------------------------------------------------------------------- */
+
+    public static function dec_To_Hex( string $decimal ) : string
+    {
+        $parts = explode( separator: '.', string: $decimal );
+        foreach( $parts as $key => $part )
+        {
+            $part = (int)$part;
+            $parts[$key] = dechex( $part );
+        }
+
+        return self::format_MAC( input: implode( separator: ':', array: $parts ));
     }
 }

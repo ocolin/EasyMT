@@ -553,6 +553,17 @@ class Params
     }
 
 
+    final static function dot1dTpFdbParams() : array
+    {
+        return [
+            1 => 'Address',
+            2 => 'Port',
+            3 => 'Status',
+            5 => 'Age'
+        ];
+    }
+
+
 /* MIKROTIK UNITS
 ----------------------------------------------------------------------------- */
 
