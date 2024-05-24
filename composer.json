@@ -6,11 +6,16 @@
         {
             "type": "vcs",
             "url": "https://github.com/ocolin/EasyEnv"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/ocolin/EasySNMP"
         }
     ],
     "require": {
         "evilfreelancer/routeros-api-php": "^1.5",
-        "ocolin/easyenv": "^1.0"
+        "ocolin/easyenv": "^1.0",
+        "ocolin/easysnmp": "^v1.2"
     },
     "require-dev": {
         "phpunit/phpunit": "^11.1",

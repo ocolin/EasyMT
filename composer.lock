@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c79580678614568bd15c47100953d212",
+    "content-hash": "2f34b1205b2dce13501bb05d4a3c557b",
     "packages": [
         {
             "name": "evilfreelancer/routeros-api-php",
@@ -132,6 +132,50 @@
                 "issues": "https://github.com/ocolin/EasyEnv/issues"
             },
             "time": "2024-04-26T13:08:19+00:00"
+        },
+        {
+            "name": "ocolin/easysnmp",
+            "version": "v1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ocolin/EasySNMP.git",
+                "reference": "96fd531a4343ce8f61ebe0114fca5eb783331dec"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ocolin/EasySNMP/zipball/96fd531a4343ce8f61ebe0114fca5eb783331dec",
+                "reference": "96fd531a4343ce8f61ebe0114fca5eb783331dec",
+                "shasum": ""
+            },
+            "require": {
+                "ocolin/easyenv": "^v1.0"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^1.11",
+                "phpunit/phpunit": "^11.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Ocolin\\EasySNMP\\": "src/",
+                    "Tests\\": "tests/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Colin Miller",
+                    "email": "ocolin@cruzio.com"
+                }
+            ],
+            "description": "Bare bones SNMP library",
+            "support": {
+                "source": "https://github.com/ocolin/EasySNMP/tree/v1.2",
+                "issues": "https://github.com/ocolin/EasySNMP/issues"
+            },
+            "time": "2024-05-22T20:22:34+00:00"
         },
         {
             "name": "spatie/ssh",

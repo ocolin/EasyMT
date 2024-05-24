@@ -90,6 +90,7 @@ class EasyMT
     }
 
 
+
 /* LOAD LOCAL ENVIRONMENT VARIABLES
 ----------------------------------------------------------------------------- */
 
@@ -104,6 +105,7 @@ class EasyMT
     }
 
 
+
 /* LOAD DEFAULT CONFIGURATION SETTINGS FROM JSON FILE
 ----------------------------------------------------------------------------- */
 
@@ -115,6 +117,7 @@ class EasyMT
 
         $this->config->ssl_options = (array)$this->config->ssl_options;
     }
+
 
 
 /* VALIDATE IPV4 IP ADDRESS
@@ -133,6 +136,7 @@ class EasyMT
             throw new Exception( message: "{$this->config->host} is not a valid IPv4 address." );
         }
     }
+
 
 
 /* SET CONFIGURATION SETTINGS
