@@ -13,7 +13,6 @@ class SNMP
 {
     private EasySNMP $client;
 
-
 /* CONSTRUCTOR
 ----------------------------------------------------------------------------- */
 
@@ -142,6 +141,7 @@ class SNMP
 ----------------------------------------------------------------------------- */
 
     /**
+     * Not supported on 1036.
      *
      * @return object Object of health data/values
      * @throws Exception
@@ -150,8 +150,8 @@ class SNMP
     {
         $output = new stdClass();
         $oid    = '.1.3.6.1.4.1.14988.1.1.3.100.1';
-        $rows   = $this->client->walk( oid: $oid, numeric: true );
 
+        $rows   = $this->client->walk( oid: $oid, numeric: true );
         foreach( $rows as $row )
         {
             $parts    = explode( separator: '.', string: $row->oid );
@@ -194,14 +194,10 @@ class SNMP
         $rows   = $this->client->walk( oid: $oid, numeric: true );
         foreach( $rows as $row )
         {
-            $parts       = explode( separator: '.', string: $row->oid );
+            $parts = explode( separator: '.', string: $row->oid );
             array_pop( array: $parts );
-            $value_index = (int)array_pop( array: $parts );
-            $param       = Params::powerParams()[$value_index] ?? 'Unknown';
-
-            if( gettype( value: $row->value ) === 'string' ) {
-                $row->value = trim( string: $row->value, characters: '"' );
-            }
+            $index = (int)array_pop( array: $parts );
+            $param = Params::powerParams()[$index] ?? 'Unknown';
 
             $output->$param = $row->value;
         }
@@ -252,10 +248,10 @@ class SNMP
         $rows   = $this->client->walk( oid: $oid, numeric: true );
         foreach( $rows as $row )
         {
-            $parts       = explode( separator: '.', string: $row->oid );
+            $parts = explode( separator: '.', string: $row->oid );
             array_pop( array: $parts );
-            $value_index = array_pop( array: $parts );
-            $param       = Params::osParams()[$value_index] ?? 'Unknown';
+            $index = array_pop( array: $parts );
+            $param = Params::osParams()[$index] ?? 'Unknown';
 
             if( is_string( $row->value )) {
                 $row->value = str_replace(
@@ -409,8 +405,8 @@ class SNMP
     {
         $output = [];
         $oid    = '.1.3.6.1.2.1.4.24.4.1';
-        $rows   = $this->client->walk( oid: $oid, numeric: true );
 
+        $rows   = $this->client->walk( oid: $oid, numeric: true );
         foreach( $rows as $row )
         {
             $data = str_replace(
@@ -442,6 +438,7 @@ class SNMP
     {
         $output = [];
         $oid = '.1.3.6.1.2.1.4.22.1.2';
+
         $rows  = $this->client->walk( oid: $oid, numeric: true );
         foreach( $rows as $row )
         {
@@ -450,13 +447,13 @@ class SNMP
                 replace: '',
                 subject: $row->oid
             );
-            list( $id, $ip ) = explode( separator: '.', string: $data, limit: 2);
+            list( $id, $ip ) = explode( separator: '.', string: $data, limit: 2 );
 
             $obj = new stdClass();
-            $obj->ip = $ip;
-            $obj->mac = self::format_MAC( $row->value );
-            $obj->interface = (int)$id;
-            $output[] = $obj;
+            $obj->ip   = $ip;
+            $obj->mac  = self::format_MAC( input: $row->value );
+            $obj->port = (int)$id;
+            $output[]  = $obj;
         }
 
         return $output;
@@ -475,8 +472,8 @@ class SNMP
     {
         $output = new stdClass();
         $oid = '.1.3.6.1.2.1.25.1';
-        $rows  = $this->client->walk( oid: $oid, numeric: true );
 
+        $rows  = $this->client->walk( oid: $oid, numeric: true );
         foreach( $rows as $row )
         {
             $parts = explode( separator: '.', string: $row->oid );
@@ -503,6 +500,7 @@ class SNMP
     {
         $output = [];
         $oid = '.1.3.6.1.2.1.25.2.3.1';
+
         $rows  = $this->client->walk( oid: $oid, numeric: true );
         foreach( $rows as $row )
         {
@@ -540,6 +538,7 @@ class SNMP
         ];
         $output = [];
         $oid    = '.1.3.6.1.2.1.25.3';
+
         $rows   = $this->client->walk( oid: $oid, numeric: true );
         foreach( $rows as $row )
         {
@@ -573,37 +572,30 @@ class SNMP
 ----------------------------------------------------------------------------- */
 
     /**
-     * @return object Object of organization data
+     * @return array<int, object> Object of organization data
      * @throws Exception
      */
-    public function get_Org() : object
+    public function get_Org() : array
     {
-        $sections = [
-            65536  => 'CPU',
-            262145 => 'Controller1',
-            262146 => 'Controller2'
-        ];
-
-        $output = new stdClass();
+        $output = [];
         $oid    = '.1.3.6.1.2.1.47.1.1.1.1';
+
         $rows   = $this->client->walk( oid: $oid, numeric: true );
         foreach( $rows as $row )
         {
             $parts = explode( separator: '.', string: $row->oid );
             list( $column, $index ) = array_slice(
-                array: $parts,offset: -2, length: 2
+                array: $parts,
+                offset: -2,
+                length: 2
             );
-
             $param = Params::orgParams()[$column] ?? 'Unknown';
-            if( empty( $output->{$sections[$index]})) {
-                $output->{$sections[$index]} = new stdClass();
+
+            if( empty( $output[$index])) {
+                $output[$index] = new stdClass();
             }
 
-            if( gettype( $row->value ) === 'string' ) {
-                $row->value = trim( string: $row->value, characters: '"' );
-            }
-
-            $output->{$sections[$index]}->$param = $row->value;
+            $output[$index]->$param = $row->value;
         }
 
         return $output;
@@ -638,10 +630,6 @@ class SNMP
                 $output[$id] = new stdClass();
             }
 
-            if( gettype( value: $row->value ) === 'string' ) {
-                $row->value = trim( string: $row->value, characters: '"');
-            }
-
             $output[$id]->$param = $row->value;
         }
 
@@ -650,9 +638,73 @@ class SNMP
 
 
 
+/*
+----------------------------------------------------------------------------- */
+
+    /**
+     * @return array<int, object>
+     * @throws Exception
+     */
+    public function get_Optical() : array
+    {
+        $output = [];
+        $oid = '.1.3.6.1.4.1.14988.1.1.19';
+
+        $rows   = $this->client->walk( oid: $oid, numeric: true );
+        foreach( $rows as $row )
+        {
+            if( str_contains( haystack: $row->origin, needle: 'No more variables' )) {
+                continue;
+            }
+
+            $parts = explode( separator: '.', string: $row->oid );
+            list( $column, $id ) = array_slice(
+                 array: $parts,
+                offset: -2,
+                length: 2
+            );
+            $id = (int)$id;
+            $param = Params::opticalParam()[$column] ?? 'Unknown';
+
+            if( empty( $output[$id])) {
+                $output[$id] = new stdClass();
+            }
+
+            $output[$id]->$param = $row->value;
+        }
+
+        return $output;
+    }
+
+
+    public function get_Lisc() : object
+    {
+        $output = new stdClass();
+        $oid = '.1.3.6.1.4.1.14988.1.1.4';
+        $rows = $this->client->walk( oid: $oid, numeric: true );
+        foreach( $rows as $row )
+        {
+            $parts = explode( separator: '.', string: $row->oid );
+            list( $id, $dnu ) = array_slice(
+                 array: $parts,
+                offset: -2,
+                length: 2
+            );
+            $param = Params::liscParams()[$id];
+            $output->$param = $row->value;
+        }
+
+        return $output;
+    }
+
+
 /* FORMAT A MAC ADDRESS - MIKROTIKS LEAVE OUT LEADING ZEROS
 ----------------------------------------------------------------------------- */
 
+    /**
+     * @param string $input Raw MAC address
+     * @return string Formatted MAC address
+     */
     public static function format_MAC( string $input ) : string
     {
         $parts = explode( separator: ':', string: $input );

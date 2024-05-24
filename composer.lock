@@ -135,16 +135,16 @@
         },
         {
             "name": "ocolin/easysnmp",
-            "version": "v1.2",
+            "version": "v1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ocolin/EasySNMP.git",
-                "reference": "96fd531a4343ce8f61ebe0114fca5eb783331dec"
+                "reference": "fe0275de60f9e09d71fc9fc06605ec0ee1225bd9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ocolin/EasySNMP/zipball/96fd531a4343ce8f61ebe0114fca5eb783331dec",
-                "reference": "96fd531a4343ce8f61ebe0114fca5eb783331dec",
+                "url": "https://api.github.com/repos/ocolin/EasySNMP/zipball/fe0275de60f9e09d71fc9fc06605ec0ee1225bd9",
+                "reference": "fe0275de60f9e09d71fc9fc06605ec0ee1225bd9",
                 "shasum": ""
             },
             "require": {
@@ -172,10 +172,10 @@
             ],
             "description": "Bare bones SNMP library",
             "support": {
-                "source": "https://github.com/ocolin/EasySNMP/tree/v1.2",
+                "source": "https://github.com/ocolin/EasySNMP/tree/v1.3",
                 "issues": "https://github.com/ocolin/EasySNMP/issues"
             },
-            "time": "2024-05-22T20:22:34+00:00"
+            "time": "2024-05-24T15:28:51+00:00"
         },
         {
             "name": "spatie/ssh",
@@ -536,16 +536,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.11.1",
+            "version": "1.11.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "e524358f930e41a2b4cca1320e3b04fc26b39e0b"
+                "reference": "0d5d4294a70deb7547db655c47685d680e39cfec"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/e524358f930e41a2b4cca1320e3b04fc26b39e0b",
-                "reference": "e524358f930e41a2b4cca1320e3b04fc26b39e0b",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/0d5d4294a70deb7547db655c47685d680e39cfec",
+                "reference": "0d5d4294a70deb7547db655c47685d680e39cfec",
                 "shasum": ""
             },
             "require": {
@@ -590,7 +590,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-05-15T08:00:59+00:00"
+            "time": "2024-05-24T13:23:04+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",

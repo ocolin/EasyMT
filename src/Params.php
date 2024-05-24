@@ -13,7 +13,7 @@ class Params
     /**
      * @return string[]
      */
-    public static function portParams() : array
+    final public static function portParams() : array
     {
         return [
             1  => 'Name',
@@ -45,7 +45,7 @@ class Params
     /**
      * @return string[]
      */
-    public static function ethernetParams() : array
+    final public static function ethernetParams() : array
     {
         return [
             1 => 'Index',
@@ -80,7 +80,7 @@ class Params
     /**
      * @return string[]
      */
-    public static function healthParams() : array
+    final public static function healthParams() : array
     {
         return [
             14   => 'temperature',
@@ -99,7 +99,7 @@ class Params
     /**
      * @return string[]
      */
-    public static function powerParams() : array
+    final public static function powerParams() : array
     {
         return [
             1  => 'CoreVoltage',
@@ -130,7 +130,7 @@ class Params
     /**
      * @return string[]
      */
-    public static function systemParams() : array
+    final public static function systemParams() : array
     {
         return [
             1 => 'Descr',
@@ -152,7 +152,7 @@ class Params
     /**
      * @return string[]
      */
-    public static function osParams() : array
+    final public static function osParams() : array
     {
         return [
             1 => 'SystemReboot',
@@ -174,7 +174,7 @@ class Params
     /**
      * @return string[]
      */
-    public static function ipParams() : array
+    final public static function ipParams() : array
     {
         return [
             1 => 'Addr',
@@ -192,7 +192,7 @@ class Params
     /**
      * @return string[]
      */
-    public static function routeParams() : array
+    final public static function routeParams() : array
     {
         return [
             1  => 'Dest',
@@ -224,7 +224,7 @@ class Params
     /**
      * @return string[]
      */
-    public static function mediaParams() : array
+    final public static function mediaParams() : array
     {
         return [
             1 => 'IfIndex',
@@ -241,7 +241,7 @@ class Params
     /**
      * @return string[]
      */
-    public static function forwardParams() : array
+    final public static function forwardParams() : array
     {
         return [
             1  => 'Dest',
@@ -270,7 +270,7 @@ class Params
     /**
      * @return string[]
      */
-    public static function arpParams() : array
+    final public static function arpParams() : array
     {
         return [
             1 => 'IfIndex',
@@ -286,7 +286,7 @@ class Params
     /**
      * @return string[]
      */
-    public static function uptimeParams() : array
+    final public static function uptimeParams() : array
     {
         return [
             1   => 'Uptime',
@@ -308,7 +308,7 @@ class Params
     /**
      * @return string[]
      */
-    public static function storageParams() : array
+    final public static function storageParams() : array
     {
         return [
             1 => 'Index',
@@ -328,7 +328,7 @@ class Params
     /**
      * @return string[]
      */
-    public static function hrDeviceParams() : array
+    final public static function hrDeviceParams() : array
     {
         return [
             1 => 'DeviceIndex',
@@ -347,7 +347,7 @@ class Params
     /**
      * @return string[]
      */
-    public static function processorParams() : array
+    final public static function processorParams() : array
     {
         return [
             1 => 'ProcessorFrwID',
@@ -362,7 +362,7 @@ class Params
     /**
      * @return string[]
      */
-    public static function orgParams() : array
+    final public static function orgParams() : array
     {
         return [
             1  => 'Index',
@@ -394,7 +394,7 @@ class Params
     /**
      * @return string[]
      */
-    public static function ifStatParams() : array
+    final public static function ifStatParams() : array
     {
         return [
             1 => 'Index',
@@ -466,6 +466,39 @@ class Params
             89 => 'TxFragment',
             90 => 'LinkDowns',
             91 => 'TxRx1024ToMax',
+        ];
+    }
+
+
+
+/* OPTICAL PARAMETERS
+----------------------------------------------------------------------------- */
+
+    final public static function opticalParam() : array
+    {
+        return [
+            2  => 'Name',
+            3  => 'RxLoss',
+            4  => 'TxFault',
+            5  => 'Wavelength',     # nm
+            6  => 'Temperature',    # C
+            7  => 'SupplyVoltage',  # V
+            8  => 'BiasCurrent',    # mA
+            9  => 'TxPower',        # dBm
+            10 => 'RxPower',        # dBm
+            11 => 'VendorName'
+        ];
+    }
+
+
+    final public static function liscParams() : array
+    {
+        return [
+            1 => 'LicSoftwareId',
+            2 => 'LicUpgrUntil',
+            3 => 'LicLevel',
+            4 => 'LicVersion',
+            5 => 'LicUpgradableTo'
         ];
     }
 
