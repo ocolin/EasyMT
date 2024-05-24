@@ -638,11 +638,11 @@ class SNMP
 
 
 
-/*
+/* GET OPTICAL DATA
 ----------------------------------------------------------------------------- */
 
     /**
-     * @return array<int, object>
+     * @return array<int, object> List of Optical data object
      * @throws Exception
      */
     public function get_Optical() : array
@@ -677,6 +677,14 @@ class SNMP
     }
 
 
+
+/* GET LICENSE DATA
+----------------------------------------------------------------------------- */
+
+    /**
+     * @return stdClass Licensing data object
+     * @throws Exception
+     */
     public function get_Lisc() : object
     {
         $output = new stdClass();
@@ -692,6 +700,40 @@ class SNMP
             );
             $param = Params::liscParams()[$id];
             $output->$param = $row->value;
+        }
+
+        return $output;
+    }
+
+
+
+/* GET NEIGHBOR DATA
+----------------------------------------------------------------------------- */
+
+    /**
+     * @return array<int, object> List of Neighbors
+     * @throws Exception
+     */
+    public function get_Neighbors() : array
+    {
+        $output = [];
+        $oid = '.1.3.6.1.4.1.14988.1.1.11';
+        $rows = $this->client->walk( oid: $oid, numeric: true );
+        foreach( $rows as $row )
+        {
+            $parts = explode( separator: '.', string: $row->oid );
+            list( $column, $id ) = array_slice(
+                array: $parts,
+                offset: -2,
+                length: 2
+            );
+
+            if( empty( $output[$id])) {
+                $output[$id] = new stdClass();
+            }
+
+            $param = Params::neighborParams()[$column];
+            $output[$id]->$param = $row->value;
         }
 
         return $output;

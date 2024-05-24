@@ -491,6 +491,13 @@ class Params
     }
 
 
+
+/* LICENSE PARAMETERS
+----------------------------------------------------------------------------- */
+
+    /**
+     * @return string[]
+     */
     final public static function liscParams() : array
     {
         return [
@@ -499,6 +506,28 @@ class Params
             3 => 'LicLevel',
             4 => 'LicVersion',
             5 => 'LicUpgradableTo'
+        ];
+    }
+
+
+
+/* NEIGHBOR PARAMETERS
+----------------------------------------------------------------------------- */
+
+    /**
+     * @return string[]
+     */
+    final public static function neighborParams() : array
+    {
+        return [
+            1 => 'Index',
+            2 => 'IpAddress',
+            3 => 'MacAddress',
+            4 => 'Version',
+            5 => 'Platform',
+            6 => 'Identity',
+            7 => 'SoftwareID',
+            8 => 'InterfaceID'
         ];
     }
 
