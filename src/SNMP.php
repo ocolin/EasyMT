@@ -740,6 +740,22 @@ class SNMP
     }
 
 
+/* GET DHCP LEASE COUNT
+----------------------------------------------------------------------------- */
+
+    /**
+     * @return int Number of DHCP leases
+     * @throws Exception
+     */
+    public function leaseCount() : int
+    {
+        $data = $this->client->get( oid: '.1.3.6.1.4.1.14988.1.1.6.1.0' );
+
+        return (int)$data->value;
+    }
+
+
+
 /* FORMAT A MAC ADDRESS - MIKROTIKS LEAVE OUT LEADING ZEROS
 ----------------------------------------------------------------------------- */
 
