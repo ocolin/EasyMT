@@ -474,6 +474,9 @@ class Params
 /* OPTICAL PARAMETERS
 ----------------------------------------------------------------------------- */
 
+    /**
+     * @return string[]
+     */
     final public static function opticalParam() : array
     {
         return [
@@ -535,6 +538,9 @@ class Params
 /* PARTITION PARAMS
 ----------------------------------------------------------------------------- */
 
+    /**
+     * @return string[]
+     */
     final public static function partitionParams() : array
     {
         return [

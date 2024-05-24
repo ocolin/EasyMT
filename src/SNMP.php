@@ -359,7 +359,7 @@ class SNMP
 ----------------------------------------------------------------------------- */
 
     /**
-     * @return array<int, stdClass> List of storage data objects
+     * @return array<int, object> List of storage data objects
      * @throws Exception
      */
     public function get_Storage() : array
