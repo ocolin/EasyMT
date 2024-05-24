@@ -532,6 +532,21 @@ class Params
     }
 
 
+/* PARTITION PARAMS
+----------------------------------------------------------------------------- */
+
+    final public static function partitionParams() : array
+    {
+        return [
+            1 => 'Name',
+            2 => 'Size',
+            3 => 'Version',
+            4 => 'Active',
+            5 => 'Running'
+        ];
+    }
+
+
 /* MIKROTIK UNITS
 ----------------------------------------------------------------------------- */
 

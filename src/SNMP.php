@@ -13,6 +13,9 @@ class SNMP
 {
     private EasySNMP $client;
 
+    const string MIKROTIK_MIB = '.1.3.6.1.4.1.14988.1.1.';
+
+
 /* CONSTRUCTOR
 ----------------------------------------------------------------------------- */
 
@@ -64,23 +67,9 @@ class SNMP
      */
     public function get_Ports() : array
     {
-        $output = [];
         $oid    = '.1.3.6.1.2.1.31.1.1.1';
-        $rows   = $this->client->walk( oid: $oid, numeric: true );
-        foreach( $rows as $row )
-        {
-            $parts    = explode( separator: '.', string: $row->oid );
-            $index    = (int)array_pop( array: $parts );
-            $param_id = (int)array_pop( array: $parts );
-            $param = Params::portParams()[$param_id] ?? 'Unknown';
 
-            if( empty( $output[$index] )) {
-                $output[$index] = new stdClass();
-            }
-            $output[$index]->$param = $row->value;
-        }
-
-        return $output;
+        return $this->generic_Walk( oid: $oid, param_func: 'portParams' );
     }
 
 
@@ -94,27 +83,9 @@ class SNMP
      */
     public function get_Ethernet() : array
     {
-        $output = [];
         $oid    = '.1.3.6.1.2.1.2.2.1';
-        $rows   = $this->client->walk( oid: $oid, numeric: true );
-        foreach( $rows as $row )
-        {
-            $parts    = explode( separator: '.', string: $row->oid );
-            $index    = (int)array_pop( array: $parts );
-            $param_id = (int)array_pop( array: $parts );
-            $param = Params::ethernetParams()[$param_id] ?? 'Unknown';
 
-            if( empty( $output[$index] )) {
-                $output[$index] = new stdClass();
-            }
-
-            if( $param_id === 6 ) {
-                $row->value = self::format_MAC( $row->value );
-            }
-            $output[$index]->$param = $row->value;
-        }
-
-        return $output;
+        return $this->generic_Walk( oid: $oid, param_func: 'ethernetParams' );
     }
 
 
@@ -136,77 +107,6 @@ class SNMP
     }
 
 
-
-/* GET MIKROTIK HEALTH INFORMATION
------------------------------------------------------------------------------ */
-
-    /**
-     * Not supported on 1036.
-     *
-     * @return object Object of health data/values
-     * @throws Exception
-     */
-    public function get_Health() : object
-    {
-        $output = new stdClass();
-        $oid    = '.1.3.6.1.4.1.14988.1.1.3.100.1';
-
-        $rows   = $this->client->walk( oid: $oid, numeric: true );
-        foreach( $rows as $row )
-        {
-            $parts    = explode( separator: '.', string: $row->oid );
-            $index    = (int)array_pop( array: $parts );
-            $param_id = (int)array_pop( array: $parts );
-            $param    = Params::healthParams()[$index] ?? 'Unknown';
-
-            switch( $param_id )
-            {
-                case 2:
-                    $output->$param = new stdClass();
-                    break;
-                case 3:
-                    $output->$param->Value = $row->value;
-                    break;
-                case 4:
-                    $output->$param->Unit = $row->value;
-                    $output->$param->UnitName = Params::mtUnits()[$row->value] ;
-                    break;
-            }
-        }
-
-        return $output;
-    }
-
-
-
-/* GET POWER INFORMATION
------------------------------------------------------------------------------ */
-
-    /**
-     * Only works for some MTs
-     * @return object Object of power data objects
-     * @throws Exception
-     */
-    public function get_Power() : object
-    {
-        $output = new stdClass();
-        $oid    = '.1.3.6.1.4.1.14988.1.1.3';
-        $rows   = $this->client->walk( oid: $oid, numeric: true );
-        foreach( $rows as $row )
-        {
-            $parts = explode( separator: '.', string: $row->oid );
-            array_pop( array: $parts );
-            $index = (int)array_pop( array: $parts );
-            $param = Params::powerParams()[$index] ?? 'Unknown';
-
-            $output->$param = $row->value;
-        }
-
-        return $output;
-    }
-
-
-
 /* GET SYSTEM INFORMATION
 ----------------------------------------------------------------------------- */
 
@@ -225,41 +125,6 @@ class SNMP
             array_pop( array: $parts );
             $index = (int)array_pop( array: $parts );
             $param = Params::systemParams()[$index] ?? 'Unknown';
-
-            $output->$param = $row->value;
-        }
-
-        return $output;
-    }
-
-
-
-/* GET OS INFORMATION
------------------------------------------------------------------------------ */
-
-    /**
-     * @return stdClass Object of OS related data
-     * @throws Exception
-     */
-    public function get_OS() : object
-    {
-        $output = new stdClass();
-        $oid    = '.1.3.6.1.4.1.14988.1.1.7';
-        $rows   = $this->client->walk( oid: $oid, numeric: true );
-        foreach( $rows as $row )
-        {
-            $parts = explode( separator: '.', string: $row->oid );
-            array_pop( array: $parts );
-            $index = array_pop( array: $parts );
-            $param = Params::osParams()[$index] ?? 'Unknown';
-
-            if( is_string( $row->value )) {
-                $row->value = str_replace(
-                     search: '"',
-                    replace: '',
-                    subject: $row->value
-                );
-            }
 
             $output->$param = $row->value;
         }
@@ -423,6 +288,7 @@ class SNMP
         }
 
         return $output;
+
     }
 
 
@@ -498,23 +364,9 @@ class SNMP
      */
     public function get_Storage() : array
     {
-        $output = [];
         $oid = '.1.3.6.1.2.1.25.2.3.1';
 
-        $rows  = $this->client->walk( oid: $oid, numeric: true );
-        foreach( $rows as $row )
-        {
-            $parts  = explode( separator: '.', string: $row->oid );
-            $id     = (int)array_pop( array: $parts );
-            $column = (int)array_pop( array: $parts );
-            $param  = Params::storageParams()[$column] ?? 'Unknown';
-
-            if( empty( $output[$id] )) { $output[$id] = new stdClass(); }
-
-            $output[$id]->$param = $row->value;
-        }
-
-        return $output;
+        return $this->generic_Walk( oid: $oid, param_func: 'storageParams' );
     }
 
 
@@ -577,25 +429,34 @@ class SNMP
      */
     public function get_Org() : array
     {
-        $output = [];
-        $oid    = '.1.3.6.1.2.1.47.1.1.1.1';
+        $oid = '.1.3.6.1.2.1.47.1.1.1.1';
 
+        return $this->generic_Walk( oid: $oid, param_func: 'orgParams' );
+    }
+
+
+
+/* GET POWER INFORMATION
+----------------------------------------------------------------------------- */
+
+    /**
+     * Only works for some MTs
+     * @return object Object of power data objects
+     * @throws Exception
+     */
+    public function get_Power() : object
+    {
+        $output = new stdClass();
+        $oid    = self::MIKROTIK_MIB . '3';
         $rows   = $this->client->walk( oid: $oid, numeric: true );
         foreach( $rows as $row )
         {
             $parts = explode( separator: '.', string: $row->oid );
-            list( $column, $index ) = array_slice(
-                array: $parts,
-                offset: -2,
-                length: 2
-            );
-            $param = Params::orgParams()[$column] ?? 'Unknown';
+            array_pop( array: $parts );
+            $index = (int)array_pop( array: $parts );
+            $param = Params::powerParams()[$index] ?? 'Unknown';
 
-            if( empty( $output[$index])) {
-                $output[$index] = new stdClass();
-            }
-
-            $output[$index]->$param = $row->value;
+            $output->$param = $row->value;
         }
 
         return $output;
@@ -603,74 +464,41 @@ class SNMP
 
 
 
-/* GET INTERFACE STATISTICS
+/* GET MIKROTIK HEALTH INFORMATION
 ----------------------------------------------------------------------------- */
 
     /**
-     * @return array<int, object> List of interface stat data objects
+     * Not supported on 1036.
+     *
+     * @return object Object of health data/values
      * @throws Exception
      */
-    public function get_IfStats() : array
+    public function get_Health() : object
     {
-        $output = [];
-        $oid    = '.1.3.6.1.4.1.14988.1.1.14';
-        $rows   = $this->client->walk( oid: $oid, numeric: true );
-
-        foreach( $rows as $row ) {
-            $parts = explode( separator: '.', string: $row->oid );
-            list( $column, $id ) = array_slice(
-                 array: $parts,
-                offset: -2,
-                length: 2
-            );
-            $id = (int)$id;
-
-            $param = Params::ifStatParams()[$column];
-            if( empty( $output[$id])) {
-                $output[$id] = new stdClass();
-            }
-
-            $output[$id]->$param = $row->value;
-        }
-
-        return  $output;
-    }
-
-
-
-/* GET OPTICAL DATA
------------------------------------------------------------------------------ */
-
-    /**
-     * @return array<int, object> List of Optical data object
-     * @throws Exception
-     */
-    public function get_Optical() : array
-    {
-        $output = [];
-        $oid = '.1.3.6.1.4.1.14988.1.1.19';
+        $output = new stdClass();
+        $oid    = self::MIKROTIK_MIB . '3.100.1';
 
         $rows   = $this->client->walk( oid: $oid, numeric: true );
         foreach( $rows as $row )
         {
-            if( str_contains( haystack: $row->origin, needle: 'No more variables' )) {
-                continue;
+            $parts    = explode( separator: '.', string: $row->oid );
+            $index    = (int)array_pop( array: $parts );
+            $param_id = (int)array_pop( array: $parts );
+            $param    = Params::healthParams()[$index] ?? 'Unknown';
+
+            switch( $param_id )
+            {
+                case 2:
+                    $output->$param = new stdClass();
+                    break;
+                case 3:
+                    $output->$param->Value = $row->value;
+                    break;
+                case 4:
+                    $output->$param->Unit = $row->value;
+                    $output->$param->UnitName = Params::mtUnits()[$row->value];
+                    break;
             }
-
-            $parts = explode( separator: '.', string: $row->oid );
-            list( $column, $id ) = array_slice(
-                 array: $parts,
-                offset: -2,
-                length: 2
-            );
-            $id = (int)$id;
-            $param = Params::opticalParam()[$column] ?? 'Unknown';
-
-            if( empty( $output[$id])) {
-                $output[$id] = new stdClass();
-            }
-
-            $output[$id]->$param = $row->value;
         }
 
         return $output;
@@ -688,7 +516,7 @@ class SNMP
     public function get_Lisc() : object
     {
         $output = new stdClass();
-        $oid = '.1.3.6.1.4.1.14988.1.1.4';
+        $oid = self::MIKROTIK_MIB . '4';
         $rows = $this->client->walk( oid: $oid, numeric: true );
         foreach( $rows as $row )
         {
@@ -698,7 +526,42 @@ class SNMP
                 offset: -2,
                 length: 2
             );
-            $param = Params::liscParams()[$id];
+            $param = Params::liscParams()[$id] ?? 'Unknown';
+            $output->$param = $row->value;
+        }
+
+        return $output;
+    }
+
+
+
+/* GET OS INFORMATION
+----------------------------------------------------------------------------- */
+
+    /**
+     * @return stdClass Object of OS related data
+     * @throws Exception
+     */
+    public function get_OS() : object
+    {
+        $output = new stdClass();
+        $oid    = self::MIKROTIK_MIB . '7';
+        $rows   = $this->client->walk( oid: $oid, numeric: true );
+        foreach( $rows as $row )
+        {
+            $parts = explode( separator: '.', string: $row->oid );
+            array_pop( array: $parts );
+            $index = array_pop( array: $parts );
+            $param = Params::osParams()[$index] ?? 'Unknown';
+
+            if( is_string( $row->value )) {
+                $row->value = str_replace(
+                    search: '"',
+                    replace: '',
+                    subject: $row->value
+                );
+            }
+
             $output->$param = $row->value;
         }
 
@@ -716,9 +579,56 @@ class SNMP
      */
     public function get_Neighbors() : array
     {
+        $oid = self::MIKROTIK_MIB . '11';
+
+        return $this->generic_Walk( oid: $oid, param_func: 'neighborParams' );
+    }
+
+
+
+/* GET INTERFACE STATISTICS
+----------------------------------------------------------------------------- */
+
+    /**
+     * @return array<int, object> List of interface stat data objects
+     * @throws Exception
+     */
+    public function get_IfStats() : array
+    {
+        $oid = self::MIKROTIK_MIB . '14';
+
+        return $this->generic_Walk( oid: $oid, param_func: 'ifStatParams' );
+    }
+
+
+/* GET PARTITION DATA
+----------------------------------------------------------------------------- */
+
+    /**
+     * @return object[] List of Partition data objects
+     * @throws Exception
+     */
+    public function get_Partitions() : array
+    {
+        $oid = self::MIKROTIK_MIB . '17';
+
+        return $this->generic_Walk( oid: $oid, param_func: 'partitionParams' );
+    }
+
+
+/* GENERIC TREE WALK
+----------------------------------------------------------------------------- */
+
+    /**
+     * @param string $oid SNMP OID
+     * @param string $param_func Name of function to get parameter names
+     * @return array<int, object> List of data objects
+     * @throws Exception
+     */
+    protected function generic_Walk( string $oid, string $param_func ) : array
+    {
         $output = [];
-        $oid = '.1.3.6.1.4.1.14988.1.1.11';
-        $rows = $this->client->walk( oid: $oid, numeric: true );
+        $rows   = $this->client->walk( oid: $oid, numeric: true );
         foreach( $rows as $row )
         {
             $parts = explode( separator: '.', string: $row->oid );
@@ -727,12 +637,51 @@ class SNMP
                 offset: -2,
                 length: 2
             );
+            $id = (int)$id;
+
+            $param = Params::$param_func()[$column] ?? 'Unknown';
+            if( empty( $output[$id])) {
+                $output[$id] = new stdClass();
+            }
+
+            $output[$id]->$param = $row->value;
+        }
+
+        return $output;
+    }
+
+/* GET OPTICAL DATA
+----------------------------------------------------------------------------- */
+
+    /**
+     * @return array<int, object> List of Optical data object
+     * @throws Exception
+     */
+    public function get_Optical() : array
+    {
+        $output = [];
+        $oid = self::MIKROTIK_MIB . '19';
+
+        $rows   = $this->client->walk( oid: $oid, numeric: true );
+        foreach( $rows as $row )
+        {
+            if( str_contains( haystack: $row->origin, needle: 'No more variables' )) {
+                continue;
+            }
+
+            $parts = explode( separator: '.', string: $row->oid );
+            list( $column, $id ) = array_slice(
+                array: $parts,
+                offset: -2,
+                length: 2
+            );
+            $id = (int)$id;
+            $param = Params::opticalParam()[$column] ?? 'Unknown';
 
             if( empty( $output[$id])) {
                 $output[$id] = new stdClass();
             }
 
-            $param = Params::neighborParams()[$column];
             $output[$id]->$param = $row->value;
         }
 
@@ -749,7 +698,7 @@ class SNMP
      */
     public function leaseCount() : int
     {
-        $data = $this->client->get( oid: '.1.3.6.1.4.1.14988.1.1.6.1.0' );
+        $data = $this->client->get( oid: self::MIKROTIK_MIB . '6.1.0' );
 
         return (int)$data->value;
     }
