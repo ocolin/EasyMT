@@ -12,7 +12,7 @@ use RouterOS\Exceptions\ClientException;
 use RouterOS\Exceptions\ConfigException;
 use RouterOS\Exceptions\QueryException;
 
-class EasyMT
+class API
 {
     private object $config;
 

@@ -13,6 +13,7 @@
         }
     ],
     "require": {
+        "php": ">=8.3",
         "evilfreelancer/routeros-api-php": "^1.5",
         "ocolin/easyenv": "^1.0",
         "ocolin/easysnmp": "^v1.2"
