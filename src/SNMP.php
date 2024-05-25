@@ -13,7 +13,7 @@ class SNMP
 {
     private EasySNMP $client;
 
-    const string MIKROTIK_MIB = '.1.3.6.1.4.1.14988.1.1.';
+    const string MIKROTIK_OID = '.1.3.6.1.4.1.14988.1.1.';
 
 
 /* CONSTRUCTOR
@@ -530,7 +530,7 @@ class SNMP
     public function power() : object
     {
         $output = new stdClass();
-        $oid    = self::MIKROTIK_MIB . '3';
+        $oid    = self::MIKROTIK_OID . '3';
         $rows   = $this->client->walk( oid: $oid, numeric: true );
         foreach( $rows as $row )
         {
@@ -559,7 +559,7 @@ class SNMP
     public function health() : object
     {
         $output = new stdClass();
-        $oid    = self::MIKROTIK_MIB . '3.100.1';
+        $oid    = self::MIKROTIK_OID . '3.100.1';
 
         $rows   = $this->client->walk( oid: $oid, numeric: true );
         foreach( $rows as $row )
@@ -599,7 +599,7 @@ class SNMP
     public function license() : object
     {
         $output = new stdClass();
-        $oid = self::MIKROTIK_MIB . '4';
+        $oid = self::MIKROTIK_OID . '4';
         $rows = $this->client->walk( oid: $oid, numeric: true );
         foreach( $rows as $row )
         {
@@ -628,7 +628,7 @@ class SNMP
     public function os() : object
     {
         $output = new stdClass();
-        $oid    = self::MIKROTIK_MIB . '7';
+        $oid    = self::MIKROTIK_OID . '7';
         $rows   = $this->client->walk( oid: $oid, numeric: true );
         foreach( $rows as $row )
         {
@@ -662,7 +662,7 @@ class SNMP
      */
     public function neighbors() : array
     {
-        $oid = self::MIKROTIK_MIB . '11';
+        $oid = self::MIKROTIK_OID . '11';
 
         return $this->generic_Walk( oid: $oid, param_func: 'neighborParams' );
     }
@@ -678,7 +678,7 @@ class SNMP
      */
     public function ifStats() : array
     {
-        $oid = self::MIKROTIK_MIB . '14';
+        $oid = self::MIKROTIK_OID . '14';
 
         return $this->generic_Walk( oid: $oid, param_func: 'ifStatParams' );
     }
@@ -693,7 +693,7 @@ class SNMP
      */
     public function partitions() : array
     {
-        $oid = self::MIKROTIK_MIB . '17';
+        $oid = self::MIKROTIK_OID . '17';
 
         return $this->generic_Walk( oid: $oid, param_func: 'partitionParams' );
     }
@@ -710,7 +710,7 @@ class SNMP
     public function optical() : array
     {
         $output = [];
-        $oid = self::MIKROTIK_MIB . '19';
+        $oid = self::MIKROTIK_OID . '19';
 
         $rows   = $this->client->walk( oid: $oid, numeric: true );
         foreach( $rows as $row )
@@ -749,7 +749,7 @@ class SNMP
      */
     public function leaseCount() : int
     {
-        $data = $this->client->get( oid: self::MIKROTIK_MIB . '6.1.0' );
+        $data = $this->client->get( oid: self::MIKROTIK_OID . '6.1.0' );
 
         return (int)$data->value;
     }

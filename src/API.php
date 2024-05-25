@@ -33,9 +33,9 @@ class API
      * @throws Exception
      */
     public function __construct(
-        readonly private string $prefix,
-        readonly private bool   $local = false,
-        readonly private ?string $ip = null
+        readonly private string  $prefix = '',
+        readonly private bool    $local  = false,
+        readonly private ?string $ip     = null
     )
     {
         $this->load_Default_config();
@@ -66,8 +66,8 @@ class API
      * @throws QueryException
      */
     public static function query(
-         string $prefix,
          string $endpoint,
+         string $prefix = '',
         ?string $ip         = null,
          ?array $where      = null,
         ?string $operations = null,
@@ -146,6 +146,6 @@ class API
     {
         $this->config->host =  $this->ip ?? $_ENV[ $this->prefix . '_MT_IP'] ?? $this->config->host;
         $this->config->user = $_ENV[ $this->prefix . '_MT_USER'] ?? $this->config->user;
-        $this->config->pass = $_ENV[ $this->prefix . '_MT_PASS'] ?? $this->config->user;
+        $this->config->pass = $_ENV[ $this->prefix . '_MT_PASS'] ?? $this->config->pass;
     }
 }

@@ -1,9 +1,113 @@
 # About
-This library provides a simple and basic interface to usein evilcoder's RouterOS AP as well as SNMP calls for Mikrotik devices.
+This library provides a simple and basic interface to useing evilfreelancer's RouterOS API as well as SNMP calls for Mikrotik devices.
 
 ## Requirements
 
 PHP 8.3+
+
+## Adding a composer module:
+
+In your composer.json
+``` 
+"repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/ocolin/EasySNMP"
+        }
+    ],
+```
+
+Then run
+
+``` 
+composer require ocolin/eastmt
+```
+
+# API
+
+Most of the funcionality comes from:
+
+https://github.com/EvilFreelancer/routeros-api-php
+
+This wrapper simply allows you to use environment variables in advance.
+
+## Settings
+
+### Arguments
+
+Any host related arguments such as IP will take precedent the config file or environment variables
+
+### Environment Variables 
+
+Environment variables will override any settings from the default config file. A prefix is required so that multiple entries can be stored. The prefix will be appended to the beginning of the environment variable used. Here are the defaults:
+
+
+With prefix 'EXAMPLE1':
+
+``` 
+$_ENV['EXAMPLE1_MT_IP'];
+$_ENV['EXAMPLE1_MT_USER'];
+$_ENV['EXAMPLE1_MT_PASS'];
+```
+
+### Default config file
+
+You can also edit **src/config.json** if you don't want to use arguments or environment variables. This will however only allow for a single device to be used.
+
+## Examples
+
+### Example 1: Using settings in config.json
+
+```
+use Ocolin\EasyMT\API;
+
+$output = API::query( '/ip/arp/print' )->read();
+```
+
+### Example 2: Using parameters:
+
+``` 
+use Ocolin\EasyMT\API;
+
+$output = API::query(
+        endpoint: '/ip/arp/print',
+        where: [
+            ['address', '127.0.0.1'],
+            ['address', '127.0.0.2']
+        ],
+        operations: '|'
+)->read();
+```
+
+### Example 3: Using environment variables
+
+``` 
+use Ocolin\EasyMT\API;
+
+$_ENV['EXAMPLE_MT_IP']   = '127.0.0.1';
+$_ENV['EXAMPLE_MT_USER'] = 'admin';
+$_ENV['EXAMPLE_MT_PASS'] = 'pass';
+
+$output = API::query(
+    endpoint: '/ip/arp/print',
+      prefix: 'EXAMPLE'
+)->read();
+
+```
+
+### Example 4: Using argument ip and local environment variables
+
+``` 
+use Ocolin\EasyMT\API;
+
+$output = API::query(
+    endpoint: '/ip/arp/print',
+      prefix: 'EXAMPLE',
+       local: true
+)->read();
+```
+
+
 
 # SNMP
 
@@ -41,6 +145,9 @@ PHP 8.3+
 ### Example 1: Using environment variable
 
 ```
+
+use Ocolin\EasyMT\SNMP;
+
 $_ENV['EXAMPLE1_SNMP_COMMUNITY'] = public;
 $_ENV['EXAMPLE1_SNMP_VERSION'] = 2;
 $_ENV['EXAMPLE1_MT_IP'] = '127.0.0.1';
@@ -55,6 +162,8 @@ $output = $snmp->health();
 ### Example 2: Using argument variables
 
 ```
+use Ocolin\EasyMT\SNMP;
+
 $snmp = new \Ocolin\EasyMT\SNMP(
            ip: '127.0.0.1',
     community: 'public',
@@ -67,6 +176,8 @@ $output = $snmp->health();
 ### Example 3: Using default SNMP settings
 
 ```
+use Ocolin\EasyMT\SNMP;
+
 $snmp = new \Ocolin\EasyMT\SNMP(
     ip: '127.0.0.1'
 );
