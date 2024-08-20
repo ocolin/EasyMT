@@ -44,7 +44,7 @@ Environment variables will override any settings from the default config file. A
 
 With prefix 'EXAMPLE1':
 
-``` 
+```
 $_ENV['EXAMPLE1_MT_IP'];
 $_ENV['EXAMPLE1_MT_USER'];
 $_ENV['EXAMPLE1_MT_PASS'];
@@ -58,7 +58,7 @@ You can also edit **src/config.json** if you don't want to use arguments or envi
 
 ### Example 1: Using settings in config.json
 
-```
+```php
 use Ocolin\EasyMT\API;
 
 $output = API::query( '/ip/arp/print' )->read();
@@ -66,7 +66,7 @@ $output = API::query( '/ip/arp/print' )->read();
 
 ### Example 2: Using parameters:
 
-``` 
+``` php
 use Ocolin\EasyMT\API;
 
 $output = API::query(
@@ -81,7 +81,7 @@ $output = API::query(
 
 ### Example 3: Using environment variables
 
-``` 
+``` php
 use Ocolin\EasyMT\API;
 
 $_ENV['EXAMPLE_MT_IP']   = '127.0.0.1';
@@ -97,7 +97,7 @@ $output = API::query(
 
 ### Example 4: Using argument ip and local environment variables
 
-``` 
+``` php
 use Ocolin\EasyMT\API;
 
 $output = API::query(
@@ -144,8 +144,7 @@ $output = API::query(
 
 ### Example 1: Using environment variable
 
-```
-
+```php
 use Ocolin\EasyMT\SNMP;
 
 $_ENV['EXAMPLE1_SNMP_COMMUNITY'] = public;
@@ -161,7 +160,7 @@ $output = $snmp->health();
 
 ### Example 2: Using argument variables
 
-```
+```php
 use Ocolin\EasyMT\SNMP;
 
 $snmp = new \Ocolin\EasyMT\SNMP(
@@ -175,7 +174,7 @@ $output = $snmp->health();
 
 ### Example 3: Using default SNMP settings
 
-```
+```php
 use Ocolin\EasyMT\SNMP;
 
 $snmp = new \Ocolin\EasyMT\SNMP(
@@ -185,7 +184,7 @@ $output = $snmp->health();
 ```
 ### Example Output:
 
-``` 
+```php
 stdClass Object
 (
     [temperature] => stdClass Object

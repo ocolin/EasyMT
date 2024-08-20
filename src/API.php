@@ -1,6 +1,6 @@
 <?php
 
-declare( strict_types =1 );
+declare( strict_types = 1 );
 
 namespace Ocolin\EasyMT;
 
@@ -43,7 +43,7 @@ class API
         $this->set_Config();
         $this->validate_IP();
 
-        $client = new RouterOS\Config((array)$this->config);
+        $client = new RouterOS\Config( (array)$this->config );
         $this->client = new RouterOS\Client( $client );
     }
 
@@ -133,7 +133,9 @@ class API
              filter: FILTER_VALIDATE_IP,
             options: FILTER_FLAG_IPV4
         )) {
-            throw new Exception( message: "{$this->config->host} is not a valid IPv4 address." );
+            throw new Exception(
+                message: "{$this->config->host} is not a valid IPv4 address."
+            );
         }
     }
 

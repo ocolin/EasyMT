@@ -11,8 +11,14 @@ use stdClass;
 
 class SNMP
 {
+    /**
+     * @var EasySNMP SNMP client
+     */
     private EasySNMP $client;
 
+    /**
+     * @const MIKROTIK_OID base SNMP tree OID for Mikrotik
+     */
     const string MIKROTIK_OID = '.1.3.6.1.4.1.14988.1.1.';
 
 
@@ -20,8 +26,10 @@ class SNMP
 ----------------------------------------------------------------------------- */
 
     /**
-     * @param string|null $ip IPv4 address. If b lank, env will be used
-     * @param string $prefix Prefix to add to environment variable names
+     * @param string|null $ip IPv4 address. If b lank, env will be used.
+     * @param string $prefix Prefix to add to environment variable names.
+     * @param string|null $community SNMP community string.
+     * @param int|null $version SNMP version. V3 not supported.
      * @param bool $local Use local .env file rather than external.
      * @throws Exception
      */
@@ -80,7 +88,7 @@ class SNMP
      */
     public function ports() : array
     {
-        $oid    = '.1.3.6.1.2.1.31.1.1.1';
+        $oid = '.1.3.6.1.2.1.31.1.1.1';
 
         return $this->generic_Walk( oid: $oid, param_func: 'portParams' );
     }
@@ -99,7 +107,7 @@ class SNMP
      */
     public function ethernet() : array
     {
-        $oid    = '.1.3.6.1.2.1.2.2.1';
+        $oid = '.1.3.6.1.2.1.2.2.1';
 
         return $this->generic_Walk( oid: $oid, param_func: 'ethernetParams' );
     }
@@ -116,7 +124,7 @@ class SNMP
      */
     public function port_Name( int $index ) : string|null
     {
-        $oid = '.1.3.6.1.2.1.2.2.1.2.' . $index;
+        $oid  = '.1.3.6.1.2.1.2.2.1.2.' . $index;
         $data = $this->client->get( oid: $oid );
 
         return $data->value ?? null;
@@ -181,7 +189,7 @@ class SNMP
                     limit: 2
             );
             $param = Params::ipParams()[$param_id] ?? 'Unknown';
-            if( empty( $output[$ip] )) {$output[$ip] =  new stdClass(); }
+            if( empty( $output[$ip] )) { $output[$ip] =  new stdClass(); }
 
             $output[$ip]->$param = $row->value;
         }
@@ -224,7 +232,7 @@ class SNMP
 
             list( $index, $ip ) = explode( separator: '.', string: $oid, limit: 2 );
 
-            if( empty( $output[$ip] )) {$output[$ip] =  new stdClass(); }
+            if( empty( $output[$ip] )) { $output[$ip] =  new stdClass(); }
 
             $param = Params::routeParams()[$index] ?? 'Unknown';
             $output[$ip]->$param = $row->value;
@@ -271,7 +279,8 @@ class SNMP
                     limit: 3
             );
 
-            if( empty( $output[$ip] )) {$output[$ip] =  new stdClass(); }
+            unset( $dnu );
+            if( empty( $output[$ip] )) { $output[$ip] =  new stdClass(); }
 
             $param = Params::mediaParams()[$index] ?? 'Unknown';
             $output[$ip]->$param = $row->value;
@@ -309,7 +318,7 @@ class SNMP
                 replace: '',
                 subject: $row->oid
             );
-            list( $index, $id ) = explode( separator: '.', string: $data, limit: 2);
+            list( $index, $id ) = explode( separator: '.', string: $data, limit: 2 );
             $param = Params::forwardParams()[$index] ?? 'Unknown';
 
             if( empty( $output[$id] )) { $output[$id] = new stdClass(); }
@@ -327,7 +336,7 @@ class SNMP
 ----------------------------------------------------------------------------- */
 
     /**
-     * Each entry contains one IpAddress to `physical' address equivalence
+     * Each entry contains one IpAddress to physical address equivalence
      *
      * @return stdClass[] List of Arp data objects
      * @throws Exception
@@ -335,7 +344,7 @@ class SNMP
     public function ARP() : array
     {
         $output = [];
-        $oid = '.1.3.6.1.2.1.4.22.1.2';
+        $oid    = '.1.3.6.1.2.1.4.22.1.2';
 
         $rows  = $this->client->walk( oid: $oid, numeric: true );
         foreach( $rows as $row )
@@ -363,7 +372,7 @@ class SNMP
 ----------------------------------------------------------------------------- */
 
     /**
-     * The Host Resourcers MIB defines a uniform set of objects useful for
+     * The Host Resources MIB defines a uniform set of objects useful for
      * the management of host computers. Host computers are independent of
      * the operating system, network services, or any software application.
      *
@@ -428,8 +437,8 @@ class SNMP
         ];
         $output = [];
         $oid    = '.1.3.6.1.2.1.25.3';
-
         $rows   = $this->client->walk( oid: $oid, numeric: true );
+
         foreach( $rows as $row )
         {
             $parts  = explode( separator: '.', string: $row->oid );
@@ -438,6 +447,7 @@ class SNMP
                 offset: -4,
                 length: 4
             );
+            unset( $dnu );
             $id = (int)$id;
 
             $param = $section == 2
@@ -489,8 +499,8 @@ class SNMP
      */
     public function dot1dTpFdbEntry() : array
     {
-        $output = [];
-        $oid = '.1.3.6.1.2.1.17.4.3.1';
+        $output   = [];
+        $oid      = '.1.3.6.1.2.1.17.4.3.1';
         $statuses = [
             0 => 'unknown',
             1 => 'other',
@@ -503,13 +513,15 @@ class SNMP
         $rows   = $this->client->walk( oid: $oid, numeric: true );
         foreach( $rows as $row ) {
             $parts = explode( separator: '.', string: $row->oid, limit: 13 );
-            list( $column, $id ) = array_slice( array: $parts, offset: -2, length: 2 );
+            list( $column, $id ) = array_slice(
+                 array: $parts,
+                offset: -2,
+                length: 2
+            );
+
             $param = Params::dot1dTpFdbParams()[$column];
             if( empty( $output[$id] )) { $output[$id] = new stdClass(); }
-            $mac = self::dec_To_Hex( $id );
-
             if( $column == 1 ) { $row->value = self::dec_To_Hex( $id ); }
-
 
             $output[$id]->$param = $row->value;
             if( $column == 3 ) { $output[$id]->StatusName = $statuses[$row->value]; }
@@ -532,6 +544,7 @@ class SNMP
         $output = new stdClass();
         $oid    = self::MIKROTIK_OID . '3';
         $rows   = $this->client->walk( oid: $oid, numeric: true );
+
         foreach( $rows as $row )
         {
             $parts = explode( separator: '.', string: $row->oid );
@@ -560,8 +573,8 @@ class SNMP
     {
         $output = new stdClass();
         $oid    = self::MIKROTIK_OID . '3.100.1';
-
         $rows   = $this->client->walk( oid: $oid, numeric: true );
+
         foreach( $rows as $row )
         {
             $parts    = explode( separator: '.', string: $row->oid );
@@ -599,16 +612,18 @@ class SNMP
     public function license() : object
     {
         $output = new stdClass();
-        $oid = self::MIKROTIK_OID . '4';
-        $rows = $this->client->walk( oid: $oid, numeric: true );
+        $oid    = self::MIKROTIK_OID . '4';
+        $rows   = $this->client->walk( oid: $oid, numeric: true );
+
         foreach( $rows as $row )
         {
             $parts = explode( separator: '.', string: $row->oid );
-            list( $id, $dnu ) = array_slice(
+            list( $id ) = array_slice(
                  array: $parts,
                 offset: -2,
                 length: 2
             );
+
             $param = Params::liscParams()[$id] ?? 'Unknown';
             $output->$param = $row->value;
         }
@@ -630,20 +645,13 @@ class SNMP
         $output = new stdClass();
         $oid    = self::MIKROTIK_OID . '7';
         $rows   = $this->client->walk( oid: $oid, numeric: true );
+
         foreach( $rows as $row )
         {
             $parts = explode( separator: '.', string: $row->oid );
             array_pop( array: $parts );
             $index = array_pop( array: $parts );
             $param = Params::osParams()[$index] ?? 'Unknown';
-
-            if( is_string( $row->value )) {
-                $row->value = str_replace(
-                    search: '"',
-                    replace: '',
-                    subject: $row->value
-                );
-            }
 
             $output->$param = $row->value;
         }
@@ -684,6 +692,7 @@ class SNMP
     }
 
 
+
 /* GET PARTITION DATA
 ----------------------------------------------------------------------------- */
 
@@ -721,7 +730,7 @@ class SNMP
 
             $parts = explode( separator: '.', string: $row->oid );
             list( $column, $id ) = array_slice(
-                array: $parts,
+                 array: $parts,
                 offset: -2,
                 length: 2
             );
@@ -773,16 +782,14 @@ class SNMP
         {
             $parts = explode( separator: '.', string: $row->oid );
             list( $column, $id ) = array_slice(
-                array: $parts,
+                 array: $parts,
                 offset: -2,
                 length: 2
             );
             $id = (int)$id;
 
             $param = Params::$param_func()[$column] ?? 'Unknown';
-            if( empty( $output[$id])) {
-                $output[$id] = new stdClass();
-            }
+            if( empty( $output[$id])) { $output[$id] = new stdClass(); }
 
             $output[$id]->$param = $row->value;
         }
@@ -815,7 +822,7 @@ class SNMP
 
 
 
-/* CONVERT DECIMAL MAC TO HEXIDECIMAL MAC
+/* CONVERT DECIMAL MAC TO HEXADECIMAL MAC
 ----------------------------------------------------------------------------- */
 
     public static function dec_To_Hex( string $decimal ) : string
