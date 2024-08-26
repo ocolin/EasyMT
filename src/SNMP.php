@@ -38,7 +38,7 @@ class SNMP
          string $prefix     = '',
         ?string $community  = null,
            ?int $version    = null,
-           bool $local      = true
+           bool $local      = false
     )
     {
         if( $local === true ) {
