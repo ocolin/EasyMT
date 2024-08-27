@@ -10,11 +10,11 @@
     "verify_peer": false
   },
   "legacy": false,
-  "timeout": 10,
-  "socket_timeout": 30,
+  "timeout": 5,
+  "socket_timeout": 5,
   "socket_blocking": true,
-  "attempts": 10,
+  "attempts": 3,
   "delay": 1,
   "ssh_port": 22,
-  "ssh_timeout": 30
+  "ssh_timeout": 5
 }
