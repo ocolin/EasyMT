@@ -2,21 +2,11 @@
     "name": "ocolin/easymt",
     "description": "Simple wrapper for evil freelancers RouterOS API client",
     "type": "library",
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/ocolin/EasyEnv"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/ocolin/EasySNMP"
-        }
-    ],
     "require": {
         "php": ">=8.3",
         "evilfreelancer/routeros-api-php": "^1.5",
-        "ocolin/easyenv": "^1.0",
-        "ocolin/easysnmp": "^v1.4"
+        "ocolin/easyenv": "^1.1",
+        "ocolin/easysnmp": "^v1.5"
     },
     "require-dev": {
         "phpunit/phpunit": "^11.1",
