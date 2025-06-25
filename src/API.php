@@ -5,7 +5,7 @@ declare( strict_types = 1 );
 namespace Ocolin\EasyMT;
 
 use Exception;
-use Ocolin\Env\EasyEnv;
+use Ocolin\EasyEnv\LoadEnv;
 use RouterOS;
 use RouterOS\Interfaces\ClientInterface;
 use RouterOS\Exceptions\ClientException;
@@ -100,7 +100,7 @@ class API
     private function localEnv() : void
     {
         if( $this->local === true ) {
-            EasyEnv::loadEnv( path: __DIR__ . '/../.env', append: true );
+            LoadEnv::loadEnv( files: __DIR__ . '/../.env', append: true );
         }
     }
 

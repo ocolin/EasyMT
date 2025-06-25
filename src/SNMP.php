@@ -5,8 +5,8 @@ declare( strict_types = 1 );
 namespace Ocolin\EasyMT;
 
 use Exception;
-use Ocolin\EasySNMP\EasySNMP;
-use Ocolin\Env\EasyEnv;
+use Ocolin\EasySNMP\SNMP AS EasySNMP;
+use Ocolin\EasyEnv\LoadEnv;
 use stdClass;
 
 class SNMP
@@ -42,7 +42,7 @@ class SNMP
     )
     {
         if( $local === true ) {
-            EasyEnv::loadEnv( path: __DIR__ . '/../.env', append: true );
+            LoadEnv::loadEnv( files: __DIR__ . '/../.env', append: true );
         }
 
         $ip        = $ip        ?? $_ENV[$prefix . '_MT_IP']          ?? '127.0.0.1';
