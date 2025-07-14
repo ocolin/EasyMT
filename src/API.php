@@ -55,7 +55,7 @@ class API
      * @param string $prefix Name of prefix to add to environment parameters
      * @param string $endpoint Path of RouterOS module
      * @param string|null $ip IPv4 Address. This will override environment ip settings
-     * @param array<array<string,string|int>>|null $where
+     * @param array<array[]>|null $where
      * @param string|null $operations Specify operator (and/or, etc) for where clause
      * @param string|null $tag
      * @param bool $local Load environment variables from local .env file.
@@ -67,7 +67,7 @@ class API
      */
     public static function query(
          string $endpoint,
-         string $prefix = '',
+         string $prefix     = '',
         ?string $ip         = null,
          ?array $where      = null,
         ?string $operations = null,
@@ -100,7 +100,7 @@ class API
     private function localEnv() : void
     {
         if( $this->local === true ) {
-            LoadEnv::loadEnv( files: __DIR__ . '/../.env', append: true );
+            new loadEnv( files: __DIR__ . '/../.env', append: true );
         }
     }
 
