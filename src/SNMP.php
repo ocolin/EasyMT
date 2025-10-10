@@ -42,7 +42,7 @@ class SNMP
     )
     {
         if( $local === true ) {
-            LoadEnv::loadEnv( files: __DIR__ . '/../.env', append: true );
+            new loadEnv( files: __DIR__ . '/../.env', append: true );
         }
 
         $ip        = $ip        ?? $_ENV[$prefix . '_MT_IP']          ?? '127.0.0.1';
