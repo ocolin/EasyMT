@@ -5,7 +5,7 @@
     "require": {
         "php": ">=8.3",
         "evilfreelancer/routeros-api-php": "^1.5",
-        "ocolin/easyenv": "^2.4",
+        "ocolin/easyenv": "^3.0",
         "ocolin/easysnmp": "^2.1"
     },
     "require-dev": {

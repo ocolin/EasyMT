@@ -1,6 +1,8 @@
 # About
 This library provides a simple and basic interface to useing evilfreelancer's RouterOS API as well as SNMP calls for Mikrotik devices.
 
+> This library is going away and being replaced by ocolin/routeros
+
 ## Requirements
 
 PHP 8.3+
